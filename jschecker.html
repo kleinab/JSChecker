@@ -10,12 +10,13 @@
     -->
     <script type="text/javascript" src="jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="esprima.js"></script>
+    <script type="text/javascript" src="jschecker.js"></script>
     <script type="text/javascript">
       $(document).ready(function() {
         $("textarea").on("keyup", function() {
           var code = $(this).val();
           var ast = esprima.parse(code);
-          console.log(ast);
+          whitelist(ast, ["VariableDeclaration", "ReturnStatement"]);
         });
       });
     </script>
