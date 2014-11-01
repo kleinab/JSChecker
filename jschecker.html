@@ -1,0 +1,29 @@
+<body>
+  <head>
+    <title>Javascript code checker</title>
+    <link href="style.css" rel="stylesheet" />
+
+    <!--
+    I decided to choose esprima as my js parser. I tried the performance test on esprima's website (http://esprima.org/test/compare.html) and esprima performed slightly better than acorn.
+    Additionally, its documentation is more user friendly than acorn's. Acorn displays its entire code base and documents every line. While this is useful to see how short the document is, it's too much information. Esprima's documentation is much easier to "parse" (haha).
+    Also, acorn does not provide any examples, while esprima provides several. Finally, esprima describes the form of its output, while acorn does not. Presumably they are the same output, but it would be great to know this ahead of time before running the code.
+    -->
+    <script type="text/javascript" src="jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="esprima.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function() {
+        $("textarea").on("keyup", function() {
+          var code = $(this).val();
+          var ast = esprima.parse(code);
+          console.log(ast);
+        });
+      });
+    </script>
+
+  </head>
+
+  <body>
+    <h1>Submit your javascript code.</h1>
+    <textarea></textarea>
+  </body>
+</body>
