@@ -17,6 +17,7 @@
           var code = $(this).val();
           var ast = esprima.parse(code);
           whitelist(ast, ["VariableDeclaration", "ReturnStatement"]);
+          blacklist(ast, ["ForStatement"]);
         });
       });
     </script>

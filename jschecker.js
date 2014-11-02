@@ -2,55 +2,72 @@
  * reqs is a list of types (for example, ForStatement, VariableDeclaration, FunctionDeclaration) which must be found in the ast.
  */
 var whitelist = function(ast, reqs) {
-  var reqs_copy = dfs(ast, reqs);
-  if (reqs_copy.length == 0) {
+  var checkDone = function(reqsCopy) {
+    return reqsCopy.length == 0;
+  };
+  var reqsCopy = dfs(ast, reqs, checkDone);
+  if (checkDone(reqsCopy)) {
     console.log("You did it!");
   }
   else {
-    console.log("You're missing "+reqs_copy);
+    console.log("You're missing "+reqsCopy);
   }
-}
+};
 
-var blacklist = function(reqs) {
+/*
+ * reqs is a list of types (for example, ForStatement, VariableDeclaration, FunctionDeclaration) which must NOT be found in the ast.
+ */
+var blacklist = function(ast, reqs) {
+  var checkDone = function(reqsCopy) {
+    return false;
+  };
+  var reqsCopy = dfs(ast, reqs, checkDone);
+  if (reqsCopy.length == reqs.length) {
+    console.log("You did it!");
+  }
+  else {
+    var diff = [];
+    for (var i=0; i<reqs.length; i++) {
+      if (reqsCopy.indexOf(reqs[i]) == -1) {
+        diff.push(reqs[i]);
+      } 
+    }
+    console.log("You have "+diff);
+  }
+};
 
-}
+var structure = function(ast, reqs) {
 
-var structure = function(reqs) {
+};
 
-}
-
-var checkDone = function(reqs) {
-  return reqs.length == 0;
-}
-
-var dfs = function(ast_branch, reqs) {
-  var reqs_copy = reqs.slice(0);
+var dfs = function(astBranch, reqs, checkDone) {
+  var reqsCopy = reqs.slice(0);
 
   // Check the type of our branch
-  var type_index = reqs_copy.indexOf(ast_branch.type);
-  if (type_index > -1) {
-    reqs_copy.splice(type_index, 1);
-    if (checkDone(reqs_copy)) {
-      return reqs_copy;
+  var typeIndex = reqsCopy.indexOf(astBranch.type);
+  if (typeIndex != -1) {
+    reqsCopy.splice(typeIndex, 1);
+    if (checkDone(reqsCopy)) {
+      return reqsCopy;
     }
   }
 
-  // If this is not a leaf, then ast_branch will have a "body" attribute. Explore all of these.
-  if (ast_branch.body) {
-    if (ast_branch.body.length) { // List of children
-      for (i=0; i<ast_branch.body.length; i++) {
-        reqs_copy = dfs(ast_branch.body[i], reqs_copy);
-        if (checkDone(reqs_copy)) {
-          return reqs_copy;
+  // If this is not a leaf, then astBranch will have a "body" attribute. Explore all of these.
+  if (astBranch.body) {
+    if (astBranch.body.length) { // List of children
+      for (i=0; i<astBranch.body.length; i++) {
+        reqsCopy = dfs(astBranch.body[i], reqsCopy, checkDone);
+        if (checkDone(reqsCopy)) {
+          return reqsCopy;
         }
       }
     }
     else { // Child is a dictionary
-      reqs_copy = dfs(ast_branch.body, reqs_copy);
-      if (checkDone(reqs_copy)) {
-        return reqs_copy;
+      reqsCopy = dfs(astBranch.body.body, reqsCopy, checkDone);
+      if (checkDone(reqsCopy)) {
+        return reqsCopy;
       }
     }
   }
-  return reqs_copy;
+  return reqsCopy;
 }
