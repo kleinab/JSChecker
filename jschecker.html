@@ -13,21 +13,34 @@
     <script type="text/javascript" src="jschecker.js"></script>
     <script type="text/javascript">
       $(document).ready(function() {
-        $("textarea").on("keyup", function() {
+        var whitelistReqs = [];
+        var blacklistReqs = [];
+        var structureReqs = $("#structure").text();
+
+        $("#whitelistForm").on("change", function() {
+          var whitelistReqs = $("#whitelistForm input:checked").map(function(){
+              return $(this).val();
+            }).get();
+        });
+
+        $("#blacklistForm").on("change", function() {
+          var blacklistReqs = $("#blacklistForm input:checked").map(function(){
+              return $(this).val();
+            }).get();
+        });
+
+        $("#structure").on("keyup", function() {
+          structureReqs = $(this).text();
+          console.log(structureReqs);
+        });
+
+        $("#code").on("keyup", function() {
           var code = $(this).val();
           var ast = esprima.parse(code);
 
-          whitelist(ast, [
-            "VariableDeclaration", "ReturnStatement"
-          ]);
-          blacklist(ast, ["ForStatement"]);
-          structure(ast, {
-            "type": "FunctionDeclaration", 
-            "body": [
-              {"type": "ReturnStatement"}, 
-              {"type": "VariableDeclaration"}
-            ]
-          });
+          whitelist(ast, whitelistReqs);
+          blacklist(ast, blacklistReqs);
+          structure(ast, structureReqs);
         });
       });
     </script>
@@ -35,7 +48,40 @@
   </head>
 
   <body>
-    <h1>Submit your javascript code.</h1>
-    <textarea></textarea>
+    <div class="row">
+      <span id="codeColumn">
+        <h1>Submit your javascript code.</h1>
+        <textarea id="code"></textarea>
+      </div>
+      <span id="feedbackColumn">
+        <h1>Requirements</h1>
+        Must have: <br />
+        <form id="whitelistForm">
+          <input type="checkbox" value="VariableDeclaration">Variable<br>
+          <input type="checkbox" value="FunctionDeclaration">Function<br>
+          <input type="checkbox" value="ForStatement">For Loop<br>
+          <input type="checkbox" value="ReturnStatement">Return Statement<br>
+          <input type="checkbox" value="BlockStatement">Block
+        </form>
+        Cannot have: <br />
+        <form id="blacklistForm">
+          <input type="checkbox" value="VariableDeclaration">Variable<br>
+          <input type="checkbox" value="FunctionDeclaration">Function<br>
+          <input type="checkbox" value="ForStatement">For Loop<br>
+          <input type="checkbox" value="ReturnStatement">Return Statement<br>
+          <input type="checkbox" value="BlockStatement">Block
+        </form>
+        Structure: <br />
+        <textarea id="structure">
+{
+  "type": "FunctionDeclaration", 
+  "body": [
+    {"type": "ReturnStatement"}, 
+    {"type": "VariableDeclaration"}
+  ]
+}
+        </textarea>
+      </span>
+    </div>
   </body>
 </body>
