@@ -16,8 +16,18 @@
         $("textarea").on("keyup", function() {
           var code = $(this).val();
           var ast = esprima.parse(code);
-          whitelist(ast, ["VariableDeclaration", "ReturnStatement"]);
+
+          whitelist(ast, [
+            "VariableDeclaration", "ReturnStatement"
+          ]);
           blacklist(ast, ["ForStatement"]);
+          structure(ast, {
+            "type": "FunctionDeclaration", 
+            "body": [
+              {"type": "ReturnStatement"}, 
+              {"type": "VariableDeclaration"}
+            ]
+          });
         });
       });
     </script>
