@@ -25,13 +25,7 @@ var whitelist = function(ast, reqs) {
   };
 
   var matches = reqs.slice(0);
-  matches = dfs(ast, reqs, matches, checkMatch, checkDone);
-  if (checkDone(matches)) {
-    console.log("You did it!");
-  }
-  else {
-    console.log("You're missing "+matches);
-  }
+  return dfs(ast, reqs, matches, checkMatch, checkDone);
 };
 
 /*
@@ -60,13 +54,7 @@ var blacklist = function(ast, reqs) {
   };
 
   var matches = [];
-  matches = dfs(ast, reqs, matches, checkMatch, checkDone);
-  if (matches.length == 0) {
-    console.log("You did it!");
-  }
-  else {
-    console.log("You have "+matches);
-  }
+  return dfs(ast, reqs, matches, checkMatch, checkDone);
 };
 
 
@@ -125,10 +113,10 @@ var structure = function(ast, reqs) {
   var matches = $.extend(true, {}, reqs);
   matches = dfs(ast, reqs, matches, checkMatch, checkDone);
   if (checkDone(matches)) {
-    console.log("You did it!");
+    return [];
   }
   else {
-    console.log(matches);
+    return matches;
   }
 };
 

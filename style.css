@@ -3,7 +3,7 @@
 }
 
 #codeColumn {
-  width: 67%;
+  width: 69%;
   float: left;
 }
 
@@ -13,12 +13,19 @@ textarea#code {
 }
 
 #feedbackColumn {
-  width: 27%;
+  width: 29%;
   height: 400px;
   float: right;
 }
 
-textarea#structure {
-  width: 100%;
-  height: 100px;
+.passed {
+  color: green;
+}
+
+.failed {
+  color: red;
+}
+
+h3 {
+  margin-bottom: 0px;
 }
