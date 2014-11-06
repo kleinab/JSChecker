@@ -10,8 +10,7 @@ Also, acorn does not provide any examples, while esprima provides several. Final
 Testing the API:
 ---------
 
-whitelist(ast, reqs)
----
+####whitelist(ast, reqs)
 ast is an AST object produced by the function esprima.parse().
 For example, ast = esprima.parse("var i=4;");
 
@@ -19,8 +18,7 @@ reqs must take the form of a list of types, with the same official names that th
 
 Returns: List of requirements that are not present in the code. Empty list if all requirements are present in code.
 
-blacklist(ast, reqs)
----
+####blacklist(ast, reqs)
 ast is an AST object produced by the function esprima.parse().
 For example, ast = esprima.parse("var i=4;");
 
@@ -28,8 +26,7 @@ reqs must take the form of a list of types, with the same official names that th
 
 Returns: List of requirements that are present in the code. Empty list if none of the requirements are present in code.
 
-structure(ast, reqs)
----
+####structure(ast, reqs)
 ast is an AST object produced by the function esprima.parse().
 For example, ast = esprima.parse("var i=4;");
 
