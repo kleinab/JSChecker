@@ -9,8 +9,30 @@ Also, acorn does not provide any examples, while esprima provides several. Final
 
 Testing the API:
 ---------
-Change the variables whitelistReqs, blacklistReqs, and structureReqs.
 
-whitelistReqs and blacklistReqs must take the form of a list of types, with the same official names that the esprima parser uses to identify types (for example, VariableDeclaration, FunctionDeclaration, ForStatement, BlockStatement, ReturnStatement).
+whitelist(ast, reqs)
+---
+ast is an AST object produced by the function esprima.parse().
+For example, ast = esprima.parse("var i=4;");
 
-structureReqs must take the form of a modified esprima ast. Every node is of the form {"type": typeName} and has an optional attribute "body", which may have a single node or a list of nodes as its value.
+reqs must take the form of a list of types, with the same official names that the esprima parser uses to identify types (for example, VariableDeclaration, FunctionDeclaration, ForStatement, BlockStatement, ReturnStatement).
+
+Returns: List of requirements that are not present in the code. Empty list if all requirements are present in code.
+
+blacklist(ast, reqs)
+---
+ast is an AST object produced by the function esprima.parse().
+For example, ast = esprima.parse("var i=4;");
+
+reqs must take the form of a list of types, with the same official names that the esprima parser uses to identify types (for example, VariableDeclaration, FunctionDeclaration, ForStatement, BlockStatement, ReturnStatement). To check for multiple instances of a single type, list it twice (for example, ["ForStatement", "ForStatement"].
+
+Returns: List of requirements that are present in the code. Empty list if none of the requirements are present in code.
+
+structure(ast, reqs)
+---
+ast is an AST object produced by the function esprima.parse().
+For example, ast = esprima.parse("var i=4;");
+
+reqs must take the form of a modified esprima ast. Every node is of the form {"type": typeName} and has an optional attribute "body", which may have a single node or a list of nodes as its value. reqs may be a list of multiple nodes.
+
+Returns: List of structures that are not present in the code. Empty list if all structure elements are present in code.

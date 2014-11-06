@@ -1,7 +1,7 @@
 /*
 * Requires:
 ** ast is an AST object produced by esprima.parse()
-** reqs is a list of type names (for example, ["ForStatement", "VariableDeclaration", "FunctionDeclaration"]) which must be found in the ast. Importantly, reqs cannot repeat types. For example ["ForStatement", "ForStatement"] is not allowed.
+** reqs is a list of type names (for example, ["ForStatement", "VariableDeclaration", "FunctionDeclaration"]) which must be found in the ast. To check for multiple instances of a single type, list it twice (for example, ["ForStatement", "ForStatement"].
 * Returns:
 ** List of requirements that are not present in the code. Empty list if all requirements are present in code.
 */
@@ -65,10 +65,8 @@ var blacklist = function(ast, reqs) {
 /*
 * Requires:
 ** ast is an AST object produced by esprima.parse()
-** reqs is a dictionary of lists of types which must be found in the ast. For example:
-{"type": "FunctionDeclaration",
- "body": {"type": "ReturnStatement"}
-}
+** reqs must take the form of a modified esprima ast. Every node is of the form {"type": typeName} and has an optional attribute "body", which may have a single node or a list of nodes as its value. reqs may be a list of multiple nodes.
+*
 * Returns:
 ** List of structures that are not present in the code. Empty list if all structure elements are present in code.
 */
@@ -93,7 +91,7 @@ var structure = function(ast, reqs) {
   * matches starts off as a copy of reqs. As we change the layer of the ast we examine, we also change the layer of reqs. When we find a leaf, we remove it from matches.
   */
   var updateMatches = function(reqs, matches, type) {
-    if (reqs.length) { // reqs is a list of nodes
+    if (reqs.length) { // reqs is a list of nodes, so we must examine all nodes in this list to check whether their type matches
       var reqsCopy = [];
       var matchesCopy = [];
       for (var i=0; i<reqs.length; i++) {
@@ -107,7 +105,7 @@ var structure = function(ast, reqs) {
       if (reqs.body) { // Change the layer of reqs and matches as we dfs down the ast
         return {"reqs": reqs.body, "matches": matches.body};
       }
-      else { // We are at a leaf
+      else { // We are at a leaf, so empty this node
         return {"reqs": reqs, "matches": {}};
       }
     }
@@ -130,12 +128,12 @@ var structure = function(ast, reqs) {
 * dfs performs a depth first search on the ast.
 * Requires:
 ** node is a node within the ast. It must be a dictionary with one attribute "type". It optionally has an attribute "body", whose value is a single node or a list of nodes.
-** reqs is a list of requirements the ast must have.
-** matches is a list of types. It has a different purpose for whitelist, blacklist, and structure.
+** reqs is the requirements the ast must have. It is a list for whitelist and blacklist and a dictionary for structure.
+** matches is a list (for whitelist and blacklist) or a dictionary (for structure). It keeps track of how many requirements the ast has met.
 ** updateMatches is a function which checks whether we have reached a branch whose type is found in reqs. If so, it returns an updated matches.
 ** checkDone is a function which checks whether dfs can terminate. It must return true or false.
 * Returns:
-** modified version of matches, according to the updateMatches function of the 
+** modified version of matches, according to the updateMatches function
 */
 var dfs = function(node, reqs, matches, updateMatches, checkDone) {
   // Check the whether the type of our branch is in reqs

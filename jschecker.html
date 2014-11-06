@@ -8,12 +8,16 @@
     <script type="text/javascript" src="jschecker.js"></script>
     <script type="text/javascript">
 
-      function writeFeedback(result, $feedbackdiv, message) {
+      function writeFeedback(result, type, message) {
+        $feedbackdiv = $("#"+type+" .feedback");
         if (result.length == 0) {
           $feedbackdiv.addClass("passed").removeClass("failed").html("Passed!");
         }
-        else {
+        else if (type == "structure") {
           $feedbackdiv.addClass("failed").removeClass("passed").html(message+JSON.stringify(result));
+        }
+        else { // type == whitelist or blacklist
+          $feedbackdiv.addClass("failed").removeClass("passed").html(message+result.join(", "));
         }
       }
 
@@ -23,14 +27,14 @@
 
         whitelistReqs and blacklistReqs must take the form of a list of types, with the same official names that the esprima parser uses to identify types (for example, VariableDeclaration, FunctionDeclaration, ForStatement, BlockStatement, ReturnStatement).
 
-        structureReqs must take the form of a modified esprima ast. Every node is of the form {"type": typeName} and has an optional attribute "body", which may have a single node or a list of nodes as its value.
+        structureReqs must take the form of a modified esprima ast. Every node is of the form {"type": typeName} and has an optional attribute "body", which may have a single node or a list of nodes as its value.  structureReqs may be a list of multiple nodes.
         *****************************************************/
-        var whitelistReqs = ["VariableDeclaration", "ReturnStatement"];
+        var whitelistReqs = ["VariableDeclaration", "ReturnStatement", "VariableDeclaration"];
         var blacklistReqs = ["ForStatement"];
-        var structureReqs = [{"type": "FunctionDeclaration", "body": [{"type": "ReturnStatement"}, {"type": "VariableDeclaration"}]}];
+        var structureReqs = [{"type": "FunctionDeclaration", "body": [{"type": "ReturnStatement"}, {"type": "VariableDeclaration"}]}, {"type": "ForStatement"}];
 
-        $("#whitelist .requirements").html("<h3>You must have these in your code:</h3>"+whitelistReqs);
-        $("#blacklist .requirements").html("<h3>You cannot have these in your code:</h3>"+blacklistReqs);
+        $("#whitelist .requirements").html("<h3>You must have these in your code:</h3>"+whitelistReqs.join(", "));
+        $("#blacklist .requirements").html("<h3>You cannot have these in your code:</h3>"+blacklistReqs.join(", "));
         $("#structure .requirements").html("<h3>Your code must have this structure:</h3>"+JSON.stringify(structureReqs));
 
         $("#code").on("keyup", function() {
@@ -41,9 +45,9 @@
           var blacklistResult = blacklist(ast, blacklistReqs);
           var structureResult = structure(ast, structureReqs);
 
-          writeFeedback(whitelistResult, $("#whitelist .feedback"), "You're missing: ");
-          writeFeedback(blacklistResult, $("#blacklist .feedback"), "You have: ");
-          writeFeedback(structureResult, $("#structure .feedback"), "You're missing: ");
+          writeFeedback(whitelistResult, "whitelist", "You're missing: ");
+          writeFeedback(blacklistResult, "blacklist", "You have: ");
+          writeFeedback(structureResult, "structure", "You're missing: ");
         });
       });
     </script>
